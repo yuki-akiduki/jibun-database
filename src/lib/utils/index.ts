@@ -1,0 +1,1 @@
+export { detectSiteType } from './site';
