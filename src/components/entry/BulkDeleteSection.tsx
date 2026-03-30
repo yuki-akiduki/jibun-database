@@ -11,9 +11,10 @@ type Props = {
   entries: Entry[];
   categories: Categories;
   isLoggedIn: boolean;
+  isXCategory?: boolean;
 };
 
-export default function BulkDeleteSection({ entries, categories, isLoggedIn }: Props) {
+export default function BulkDeleteSection({ entries, categories, isLoggedIn, isXCategory = false }: Props) {
   const [isSelectMode, setIsSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
@@ -78,27 +79,29 @@ export default function BulkDeleteSection({ entries, categories, isLoggedIn }: P
         </div>
       )}
 
-      <div className="flex flex-col gap-3">
+      <div className={`grid gap-3 ${
+        isXCategory
+          ? 'grid-cols-1 lg:grid-cols-2'
+          : 'grid-cols-1'
+      }`}>
         {entries.map((entry) => {
           const categoryName = categories.find((c) => c.id === entry.category_id)?.name;
           return (
-            <div key={entry.id} className="flex items-start gap-2">
+            <div key={entry.id} className="relative">
               {isSelectMode && (
                 <input
                   type="checkbox"
                   checked={selectedIds.has(entry.id)}
                   onChange={() => toggleSelect(entry.id)}
-                  className="mt-5 shrink-0 w-4 h-4 cursor-pointer accent-red-500"
+                  className="absolute top-2 left-2 z-10 w-4 h-4 cursor-pointer accent-red-500"
                 />
               )}
-              <div className="flex-1 min-w-0">
-                <EntryCard
-                  entry={entry}
-                  categories={categories}
-                  categoryName={categoryName}
-                  isLoggedIn={isLoggedIn && !isSelectMode}
-                />
-              </div>
+              <EntryCard
+                entry={entry}
+                categories={categories}
+                categoryName={categoryName}
+                isLoggedIn={isLoggedIn && !isSelectMode}
+              />
             </div>
           );
         })}

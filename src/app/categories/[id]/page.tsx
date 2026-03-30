@@ -70,6 +70,7 @@ export default async function CategoryPage({
         entries={(entries ?? []) as Entry[]}
         categories={categories ?? []}
         isLoggedIn={isLoggedIn}
+        isXCategory={category.name === 'X'}
       />
 
       <Pagination

@@ -36,8 +36,8 @@ export default async function RootLayout({
             {children}
           </main>
         </div>
+        <Script src="https://platform.twitter.com/widgets.js" strategy="afterInteractive" />
       </body>
-      <Script src="https://platform.twitter.com/widgets.js" strategy="lazyOnload" />
     </html>
   );
 }

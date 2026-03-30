@@ -13,7 +13,7 @@ export default function EntryList({ entries, categories, isLoggedIn }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="grid grid-cols-1 gap-3">
       {entries.map((entry) => {
         const categoryName = categories.find((c) => c.id === entry.category_id)?.name;
         return (
