@@ -61,7 +61,11 @@ const XEmbed = ({ url }: { url: string }) => {
     }
   }, [url]);
 
-  return <div ref={ref}><p className="text-sm text-gray-400">読み込み中...</p></div>;
+  return (
+    <div ref={ref}>
+      <p className="text-sm text-gray-400">読み込み中...</p>
+    </div>
+  );
 };
 
 const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
@@ -91,10 +95,7 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
                 <XEmbed url={entry.url} />
               </div>
               {isLoggedIn && (
-                <EntryCardMenu
-                  onEdit={() => setIsEditOpen(true)}
-                  onDelete={handleDelete}
-                />
+                <EntryCardMenu onEdit={() => setIsEditOpen(true)} onDelete={handleDelete} />
               )}
             </div>
             <div className="flex items-center gap-2 mt-2">
@@ -107,12 +108,7 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
         ) : (
           <>
             {entry.thumbnail_url && (
-              <a
-                href={entry.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0"
-              >
+              <a href={entry.url} target="_blank" rel="noopener noreferrer" className="shrink-0">
                 <img
                   src={entry.thumbnail_url}
                   alt=""
@@ -131,10 +127,7 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
                   {entry.title}
                 </a>
                 {isLoggedIn && (
-                  <EntryCardMenu
-                    onEdit={() => setIsEditOpen(true)}
-                    onDelete={handleDelete}
-                  />
+                  <EntryCardMenu onEdit={() => setIsEditOpen(true)} onDelete={handleDelete} />
                 )}
               </div>
               <div className="flex items-center gap-2 mt-2">

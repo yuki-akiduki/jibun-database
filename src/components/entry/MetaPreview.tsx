@@ -20,7 +20,7 @@ const MetaPreview = () => {
       {meta.site_type === 'x' && meta.html ? (
         <div dangerouslySetInnerHTML={{ __html: meta.html }} />
       ) : (
-        <div className="flex gap-3 p-3 border border-gray-200 rounded-md bg-white">
+        <div className="flex gap-3 p-3 border border-gray-200 rounded-md bg-white flex-wrap">
           {meta.thumbnail_url && (
             <img
               src={meta.thumbnail_url}
@@ -30,7 +30,7 @@ const MetaPreview = () => {
           )}
           <div>
             <p className="text-sm font-medium text-gray-900">{meta.title}</p>
-            <p className="text-xs text-gray-400 mt-1 truncate">{meta.url}</p>
+            <p className="text-xs text-gray-400 mt-1">{meta.url}</p>
           </div>
         </div>
       )}
