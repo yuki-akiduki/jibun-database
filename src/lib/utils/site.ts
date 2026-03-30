@@ -7,7 +7,11 @@ const rules = [
 ] as const;
 
 export const detectSiteType = (url: string): SiteType => {
-  const hostname = new URL(url).hostname;
-  const match = rules.find((rule) => rule.domains.some((domain) => hostname.includes(domain)));
-  return match ? match.type : 'website';
+  try {
+    const hostname = new URL(url).hostname;
+    const match = rules.find((rule) => rule.domains.some((domain) => hostname.includes(domain)));
+    return match ? match.type : 'website';
+  } catch {
+    return 'website';
+  }
 };

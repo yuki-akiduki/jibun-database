@@ -4,4 +4,5 @@ export type Meta = {
   thumbnail_url: string;
   site_type: SiteType;
   url: string;
+  html?: string;
 };
