@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import dayjs from 'dayjs';
 import CategoryBadge from './CategoryBadge';
 import EntryCardMenu from './EntryCardMenu';
@@ -109,10 +110,13 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
           <>
             {entry.thumbnail_url && (
               <a href={entry.url} target="_blank" rel="noopener noreferrer" className="shrink-0">
-                <img
+                <Image
                   src={entry.thumbnail_url}
                   alt=""
+                  width={160}
+                  height={96}
                   className="w-40 h-24 object-cover rounded-md"
+                  unoptimized
                 />
               </a>
             )}
@@ -136,12 +140,14 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
                   {dayjs(entry.created_at).format('YYYY/MM/DD')}
                 </span>
               </div>
-              {entry.memo && (
-                <p className="mt-2 text-sm text-gray-600 whitespace-pre-wrap line-clamp-2">
+            </div>
+            {entry.memo && (
+              <div className="shrink-0 w-48 max-h-24 overflow-y-auto border-l border-gray-200 pl-4">
+                <p className="text-sm text-gray-600 whitespace-pre-wrap">
                   {entry.memo}
                 </p>
-              )}
-            </div>
+              </div>
+            )}
           </>
         )}
       </div>
