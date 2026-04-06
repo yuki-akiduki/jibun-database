@@ -47,6 +47,7 @@ export default async function CategoryPage({
     .from('entries')
     .select('*', { count: 'exact' })
     .eq('category_id', category.id)
+    .eq('is_archived', false)
     .order('created_at', { ascending: false })
     .range(from, to);
 

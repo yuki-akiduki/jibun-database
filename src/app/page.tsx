@@ -12,6 +12,7 @@ export default async function Home() {
     .from('entries')
     .select('*')
     .neq('site_type', 'x')
+    .eq('is_archived', false)
     .order('created_at', { ascending: false })
     .limit(20);
 

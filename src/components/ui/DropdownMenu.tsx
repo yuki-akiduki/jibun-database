@@ -6,6 +6,8 @@ type MenuItem = {
   label: string;
   onClick: () => void;
   variant?: 'default' | 'danger';
+  icon?: string;
+  disabled?: boolean;
 };
 
 type Props = {
@@ -54,13 +56,22 @@ export default function DropdownMenu({ items }: Props) {
             <button
               key={item.label}
               onClick={() => {
+                if (item.disabled) return;
                 item.onClick();
                 setIsOpen(false);
               }}
-              className={`block w-full text-left px-4 py-2 text-sm cursor-pointer hover:bg-gray-50 ${
-                item.variant === 'danger' ? 'text-red-600' : 'text-gray-700'
+              disabled={item.disabled}
+              className={`flex items-center gap-2 w-full text-left px-4 py-2 text-sm ${
+                item.disabled
+                  ? 'text-gray-300 cursor-not-allowed'
+                  : `cursor-pointer hover:bg-gray-50 ${
+                      item.variant === 'danger' ? 'text-red-600' : 'text-gray-700'
+                    }`
               }`}
             >
+              {item.icon && (
+                <span className="material-icons text-base">{item.icon}</span>
+              )}
               {item.label}
             </button>
           ))}

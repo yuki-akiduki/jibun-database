@@ -8,6 +8,8 @@ export type Entry = {
   site_type: SiteType;
   memo: string;
   category_id: string;
+  is_favorite: boolean;
+  is_archived: boolean;
   created_at: string;
   updated_at: string;
 };

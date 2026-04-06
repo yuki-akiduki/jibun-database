@@ -96,7 +96,13 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
                 <XEmbed url={entry.url} />
               </div>
               {isLoggedIn && (
-                <EntryCardMenu onEdit={() => setIsEditOpen(true)} onDelete={handleDelete} />
+                <EntryCardMenu
+                  entryId={entry.id}
+                  isFavorite={entry.is_favorite}
+                  isArchived={entry.is_archived}
+                  onEdit={() => setIsEditOpen(true)}
+                  onDelete={handleDelete}
+                />
               )}
             </div>
             <div className="flex items-center gap-2 mt-2">
@@ -122,16 +128,27 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
-                <a
-                  href={entry.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-gray-900 no-underline hover:underline line-clamp-2"
-                >
-                  {entry.title}
-                </a>
+                <div className="flex items-center gap-1 min-w-0">
+                  {entry.is_favorite && (
+                    <span className="material-icons text-yellow-500 text-base shrink-0">star</span>
+                  )}
+                  <a
+                    href={entry.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-gray-900 no-underline hover:underline line-clamp-2"
+                  >
+                    {entry.title}
+                  </a>
+                </div>
                 {isLoggedIn && (
-                  <EntryCardMenu onEdit={() => setIsEditOpen(true)} onDelete={handleDelete} />
+                  <EntryCardMenu
+                    entryId={entry.id}
+                    isFavorite={entry.is_favorite}
+                    isArchived={entry.is_archived}
+                    onEdit={() => setIsEditOpen(true)}
+                    onDelete={handleDelete}
+                  />
                 )}
               </div>
               <div className="flex items-center gap-2 mt-2">

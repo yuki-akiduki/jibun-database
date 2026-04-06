@@ -46,3 +46,27 @@ export const deleteEntry = async (id: string) => {
   }
   return data;
 };
+
+export const toggleFavorite = async (id: string, isFavorite: boolean) => {
+  const res = await fetch(`/api/entries/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ is_favorite: isFavorite }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'お気に入りの更新に失敗しました');
+  }
+  return data;
+};
+
+export const toggleArchive = async (id: string, isArchived: boolean) => {
+  const res = await fetch(`/api/entries/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ is_archived: isArchived }),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || 'アーカイブの更新に失敗しました');
+  }
+  return data;
+};

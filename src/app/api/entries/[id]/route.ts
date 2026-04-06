@@ -14,8 +14,27 @@ export const PUT = async (
 
     const body = await request.json();
     const { id } = await params;
-    const { category_id, memo } = body;
-    const { error } = await supabase.from('entries').update({ category_id, memo }).eq('id', id);
+    const { category_id, memo, is_favorite, is_archived } = body;
+
+    // お気に入り/アーカイブの排他チェック
+    if (is_favorite !== undefined || is_archived !== undefined) {
+      const { data: entry } = await supabase.from('entries').select('is_favorite, is_archived').eq('id', id).single();
+      if (entry) {
+        const newFavorite = is_favorite ?? entry.is_favorite;
+        const newArchived = is_archived ?? entry.is_archived;
+        if (newFavorite && newArchived) {
+          return NextResponse.json({ error: 'お気に入りとアーカイブは同時に設定できません' }, { status: 400 });
+        }
+      }
+    }
+
+    const updateData: Record<string, unknown> = {};
+    if (category_id !== undefined) updateData.category_id = category_id;
+    if (memo !== undefined) updateData.memo = memo;
+    if (is_favorite !== undefined) updateData.is_favorite = is_favorite;
+    if (is_archived !== undefined) updateData.is_archived = is_archived;
+
+    const { error } = await supabase.from('entries').update(updateData).eq('id', id);
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
