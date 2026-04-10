@@ -36,7 +36,36 @@ URL を入力するだけで、サイト種別（YouTube / ニコニコ / X / �
 - **Claude**: 実装全般（コンポーネント / API Route / ユーティリティ / スタイリング）、スキーマ変更時の SQL 生成、リファクタ、エラー調査
 - **人間**: Supabase ダッシュボード操作（SQL 実行 / RLS / Auth）、Vercel へのデプロイ、設計方針の最終判断
 
-設計・方針は実装前に壁打ちで決める。
+設計・方針は下記の **Kiro SDD ワークフロー** に従う。
+
+---
+
+## Kiro SDD ワークフロー
+
+このプロジェクトは **cc-sdd (gotalab/cc-sdd)** による Spec-Driven Development で開発する。
+
+### 保存場所
+- **Steering** (`.kiro/steering/`): プロジェクト全体のルール・アーキテクチャ・規約。project memory として読み込まれる
+- **Specs** (`.kiro/specs/`): 個別機能ごとの開発プロセス（requirements / design / tasks）
+
+### 3-phase 承認ワークフロー
+**Requirements → Design → Tasks → Implementation** の順で進める。各 phase で**人間レビュー必須**。`-y` フラグは意図的な高速化のときだけ使う。
+
+### Skill 発動原則
+`kiro-*` skill が該当する可能性が **1% でもあれば発動する**。「タスクが単純だから」という理由でスキップしない。
+
+### 主要コマンド
+- `/kiro-steering` — 既存コードから steering 文書を生成・更新（**既存プロジェクトではまず最初に実行**）
+- `/kiro-discovery <idea>` — idea から spec 化方針を判断（単一 spec か複数か不明なとき）
+- `/kiro-spec-init <description>` — 新規 spec 初期化
+- `/kiro-spec-quick <feature> [--auto]` — 単発 spec の高速モード
+- `/kiro-impl <feature>` — TDD で実装
+- `/kiro-spec-status <feature>` — 進捗確認
+
+その他の skill（`kiro-validate-*`, `kiro-review`, `kiro-debug`, `kiro-verify-completion` など）はワークフロー内で自動的に呼ばれる。
+
+### 言語設定
+英語で思考し、日本語で応答・生成する。spec ファイル（`requirements.md` / `design.md` / `tasks.md` など）は `spec.json` の `language` 設定に従う。
 
 ---
 
@@ -97,7 +126,7 @@ sticky ヘッダー + 左サイドバー（カテゴリナビ / お気に入り 
 
 - **Server Component / API Route**: `src/lib/supabase/server.ts`（cookie 連携）
 - **Client Component**: `src/lib/supabase/client.ts`
-- **Middleware（`src/proxy.ts`）**: `src/lib/supabase/middleware.ts`（セッションリフレッシュ）
+- **Middleware（`proxy.ts`、ルート直下）**: `src/lib/supabase/middleware.ts`（セッションリフレッシュ）
 
 RLS で SELECT は全員公開・書き込みは authenticated ロールのみ。
 
