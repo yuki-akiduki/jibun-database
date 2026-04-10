@@ -101,7 +101,7 @@
 
 ## 5. Validation — 回帰と効果を手動検証する
 
-- [ ] 5.1 全画面の機能リグレッションを確認する
+- [x] 5.1 全画面の機能リグレッションを確認する
   - 未ログインと認証済みの 2 状態で、`/` / `/categories/[id]` / `/favorites` / `/archives` / `/login` を巡回する
   - 各画面で、表示内容・件数・並び順・カテゴリバッジ・サムネイル表示・X 埋め込み・メモ表示が改善前と同一であることを確認する
   - ログイン時に EntryForm / EntryCardMenu（編集・お気に入り・アーカイブ・削除）がすべて従来通り操作できることを確認する
@@ -110,7 +110,7 @@
   - 全画面で見た目・機能のリグレッションが一切ないことを目視と操作で確認できる
   - _Requirements: 3.3, 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 5.2 認証・categories の dedup 効果を Network タブで確認する
+- [x] 5.2 認証・categories の dedup 効果を Network タブで確認する
   - Chrome DevTools の Network タブを開いたままトップページ (`/`) をハードリロードする
   - Supabase REST (`auth/v1/user`) への呼び出しが、Server Component 由来で 1 回以下（middleware 由来は別カウント）になっていることを確認する
   - Supabase REST (`rest/v1/categories`) への呼び出しが 1 回以下になっていることを確認する
@@ -118,14 +118,14 @@
   - dedup された回数を改善前の回数と比較して、Server Component 由来の重複が消えたことを目視で確認できる
   - _Requirements: 1.1, 1.2, 2.1, 3.1_
 
-- [ ] 5.3 entries の SELECT カラム絞り込みを Network タブで確認する
+- [x] 5.3 entries の SELECT カラム絞り込みを Network タブで確認する
   - DevTools Network で `rest/v1/entries` への GET を選び、response body を開く
   - `description` / `author` が含まれていないこと、`Entry` 型のフィールドだけが返ってきていることを確認する
   - トップ / カテゴリ別 / お気に入り / アーカイブ の各ページで同様に確認する
   - 全 list ページの entries レスポンスに `description` / `author` が含まれていないことを目視で確認できる
   - _Requirements: 4.1, 4.2_
 
-- [ ] 5.4 インデックス適用後の全ページ挙動を確認する
+- [x] 5.4 インデックス適用後の全ページ挙動を確認する
   - 4.2 の SQL 適用後、再度 `/` / `/categories/[id]` / `/favorites` / `/archives` を巡回する
   - 各ページの件数・並び順・ページネーションが 5.1 の結果と一致することを確認する
   - エラーメッセージや欠落したエントリがないことを確認する
