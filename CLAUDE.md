@@ -2,15 +2,23 @@
 
 ## プロジェクト概要
 
-URLを入力するだけで、サイト種別（YouTube/ニコニコ/Twitter/一般サイト）を自動判別し、タイトル・サムネイルを自動取得して登録できる個人データベース。
-閲覧は誰でも可能、登録・編集は自分だけ（メール+パスワード認証）。
+URL を入力するだけで、サイト種別（YouTube / ニコニコ / X / 一般サイト）を自動判別し、タイトル・サムネイル等のメタデータを自動取得して登録できる個人データベース。
+閲覧は誰でも可能、登録・編集は自分だけ（メール + パスワード認証）。
+
+## プロジェクトの性質
+
+これは**個人学習プロジェクト**。
+
+- テストコードは必須ではない（学習目的で書くことはある）
+- リファクタや再設計を恐れない
+- Claude は批評役・補助役。過剰な防御コードや「念のための」エラーハンドリングは求めない
 
 ## 技術スタック
 
 - **フレームワーク**: Next.js 16（App Router）
 - **言語**: TypeScript（strict mode）
-- **スタイリング**: Tailwind CSS
-- **DB / 認証 / ストレージ**: Supabase
+- **スタイリング**: Tailwind CSS v4
+- **DB / 認証**: Supabase
 - **ホスティング**: Vercel
 - **パッケージマネージャ**: pnpm
 
@@ -19,288 +27,128 @@ URLを入力するだけで、サイト種別（YouTube/ニコニコ/Twitter/一
 - `pnpm dev` — 開発サーバー起動
 - `pnpm build` — ビルド
 - `pnpm lint` — ESLint
-- `pnpm type-check` — TypeScript型チェック (`tsc --noEmit`)
+- `pnpm type-check` — TypeScript 型チェック (`tsc --noEmit`)
 
 ---
 
-## 開発の進め方
+## 担当分担
 
-Claudeが実装を担当する。方針や設計は壁打ちしながら決める。
+- **Claude**: 実装全般（コンポーネント / API Route / ユーティリティ / スタイリング）、スキーマ変更時の SQL 生成、リファクタ、エラー調査
+- **人間**: Supabase ダッシュボード操作（SQL 実行 / RLS / Auth）、Vercel へのデプロイ、設計方針の最終判断
 
-**Claudeの役割:**
-
-- コンポーネント・API Route・スタイリングの実装
-- コードレビュー・リファクタリング
-- エラーの調査・修正
-- テストコードの生成
-
-**自分でやること:**
-
-- Supabaseダッシュボード操作（テーブル変更、RLS、Auth設定など）
-- 設計方針の決定（壁打ちで決める）
-- Vercelへのデプロイ
+設計・方針は実装前に壁打ちで決める。
 
 ---
 
-## フェーズ一覧
+## プロジェクトの決めごと
 
-### Phase 0: 環境構築 ✅
+コードを読んでも分からない、仕様上の意図・制約のみ。
 
-- Next.js + Tailwind CSS + Supabase セットアップ
-- Supabaseクライアント初期化（client.ts, server.ts, middleware.ts）
+### サイト種別
+URL ドメインから自動判別。`youtube`, `niconico`, `x`, `website` の 4 種類のみ（判定は `src/lib/utils/site.ts`）。
 
-### Phase 1: データベース設計 ✅
+### X の特殊扱い
+- X 投稿はメモ・カテゴリ不要で即登録できる
+- トップページには X 以外のエントリのみ表示する
 
-- テーブル4つ作成（categories, tags, entries, entry_tags）
-- RLSポリシー設定
-- Authユーザー作成
+### カテゴリ
+固定 6 種: リリック / モーション / ボイロ / website / article / X。
+追加・削除は基本的に想定しない。色は `src/lib/constants/categories.ts` を single source of truth として参照する（`style={{}}` は禁止、Tailwind class map で管理）。
 
-### Phase 2: 認証 ✅
+### お気に入り / アーカイブ
+- `is_favorite` と `is_archived` は**排他**（両方 true にできない。API 側で防ぐ）
+- アーカイブされたエントリはトップ / カテゴリ / お気に入りには出ない（`/archives` 専用）
 
-- ログイン / ログアウト機能
-- LoginForm / LogoutButton コンポーネント
-
-### Phase 3: 登録機能 ✅
-
-- URL種別判定（detectSiteType）
-- メタデータ自動取得（YouTube oEmbed, OGPパース, X oEmbed）
-- `/api/fetch-meta`, `/api/entries` POST
-- EntryForm / UrlInput / MetaPreview
-- 編集・削除API（`/api/entries/[id]` PUT / DELETE）
-
-### Phase 4: フロントエンド再設計 ← 今ここ
-
-- レイアウト再構成（Header, Sidebar, CategoryNav）
-- EntryCard分割・再設計（表示専用 + 編集モーダル）
-- 汎用UIコンポーネント（Button, Badge, Modal, Spinner）
-- フィルタ（サイト種別、テキスト検索）
-- ページネーション
-- 認証UI制御（ログイン状態に応じた表示切替）
-- 全体スタイリング
-
-### Phase 5: タグ機能
-
-- TagInputコンポーネント
-- タグAPI連携（`/api/tags`）
-- タグフィルタ
-
-### Phase 6: デプロイ
-
-- GitHub push
-- Vercel にインポート
-- 環境変数設定
-- 動作確認・バグ修正
-
----
-
-## データベース設計
-
-### ER図
-
-```
-categories 1──N entries N──N tags
-                  │        (entry_tags)
-                  │
-             Supabase Storage（サムネイル）
-```
-
-### テーブル定義SQL（Phase 1 で自分の手で SQL Editor に入力する）
-
-```sql
--- 1. カテゴリマスタ
-CREATE TABLE categories (
-  id         BIGSERIAL PRIMARY KEY,
-  name       TEXT NOT NULL,
-  sort_order INTEGER DEFAULT 0
-);
-
--- 2. タグマスタ
-CREATE TABLE tags (
-  id   BIGSERIAL PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE
-);
-
--- 3. メインテーブル
-CREATE TABLE entries (
-  id            BIGSERIAL PRIMARY KEY,
-  url           TEXT NOT NULL UNIQUE,
-  site_type     TEXT NOT NULL CHECK (site_type IN ('youtube', 'niconico', 'x', 'website')),
-  title         TEXT,
-  thumbnail_url TEXT,
-  description   TEXT,
-  author        TEXT,
-  category_id   BIGINT REFERENCES categories(id) ON DELETE SET NULL,
-  memo          TEXT,
-  created_at    TIMESTAMPTZ DEFAULT now(),
-  updated_at    TIMESTAMPTZ DEFAULT now()
-);
-
-CREATE INDEX idx_entries_site_type ON entries(site_type);
-CREATE INDEX idx_entries_category ON entries(category_id);
-CREATE INDEX idx_entries_created  ON entries(created_at DESC);
-
--- 4. 中間テーブル
-CREATE TABLE entry_tags (
-  entry_id BIGINT REFERENCES entries(id) ON DELETE CASCADE,
-  tag_id   BIGINT REFERENCES tags(id) ON DELETE CASCADE,
-  PRIMARY KEY (entry_id, tag_id)
-);
-
-CREATE INDEX idx_entry_tags_tag ON entry_tags(tag_id);
-```
-
-### RLSポリシー（自分で書く。以下は正解例 — まず自分で考えてから見る）
-
-<details>
-<summary>💡 ヒント: 全テーブル共通で「SELECTは全員OK、INSERT/UPDATE/DELETEは認証済みのみ」</summary>
-
-```sql
-ALTER TABLE entries ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "公開閲覧"         ON entries FOR SELECT USING (true);
-CREATE POLICY "認証ユーザー登録"  ON entries FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-CREATE POLICY "認証ユーザー更新"  ON entries FOR UPDATE USING (auth.role() = 'authenticated');
-CREATE POLICY "認証ユーザー削除"  ON entries FOR DELETE USING (auth.role() = 'authenticated');
--- categories, tags, entry_tags にも同様に設定
-```
-
-</details>
-
----
-
-## URL自動判別・メタデータ取得
-
-### サイト種別判定
-
-| ドメイン                  | site_type  |
-| ------------------------- | ---------- |
-| `youtube.com`, `youtu.be` | `youtube`  |
-| `nicovideo.jp`, `nico.ms` | `niconico` |
-| `twitter.com`, `x.com`    | `x`        |
-| その他                    | `website`  |
+### 認証
+- メール + パスワード（Supabase Auth）
+- 閲覧は誰でも可、書き込み系は認証ユーザーのみ（RLS で担保）
 
 ### メタデータ取得
 
-| サイト種別 | 方法     |
-| ---------- | -------- |
-| YouTube    | oEmbed API |
-| ニコニコ   | OGPパース（cheerio） |
-| Twitter/X  | oEmbed API（HTML埋め込み） |
-| 一般サイト | OGPパース（cheerio） |
+| 種別 | 方法 |
+| ---- | ---- |
+| YouTube | oEmbed API |
+| X | oEmbed API（HTML 埋め込み） |
+| ニコニコ / 一般サイト | OGP パース（cheerio） |
+
+**失敗時の扱い**:
+- 取得元への fetch 自体が失敗したら 502 を返して登録させない
+- fetch は成功したが OGP が無い等で title / thumbnail が空 → **そのまま登録可**（URL だけの登録は許容）
+- サムネイルは**外部 URL をそのまま文字列で保存**する（Supabase Storage にはアップロードしない）
+
+### 画面構成（共通レイアウト）
+sticky ヘッダー + 左サイドバー（カテゴリナビ / お気に入り / アーカイブ導線）+ メインカラム。
 
 ---
 
-## 画面仕様
+## 画面の目的
 
-### 共通レイアウト
-- ヘッダー: sticky、ロゴ左 + ログイン/ログアウトボタン右
-- 左サイドバー: カテゴリナビ（active状態表示、カテゴリ色つき）
-- main: max-width 1000px、左寄せ
-
-### トップページ（/）
-- X以外の最近20件を1カラム縦積みで表示
-- カードクリック → 元URLを新タブで開く
-- ログイン時: ページ上部にURL入力 + 登録UI表示
-  - X投稿: メモ・カテゴリ不要、即登録可能
-  - X以外: カテゴリ選択 + メモ入力が可能
-
-### カテゴリページ（/categories/[id]）
-- 該当カテゴリのエントリを1カラム縦積み、40件ずつページネーション
-- ログイン時: カードメニューから編集・削除、一括削除ボタン
-
-### ログインページ（/login）
-- メール + パスワード → 成功時トップにリダイレクト
-
-### カテゴリ一覧（固定5つ + X）
-| カテゴリ | 色 |
-|---------|-----|
-| リリック | 要定義 |
-| モーション | 要定義 |
-| ボイロ | 要定義 |
-| website | 要定義 |
-| article | 要定義 |
-| X | 要定義 |
+| パス | 目的 |
+| ---- | ---- |
+| `/` | 最近登録したエントリ（X 以外・未アーカイブ）の閲覧、ログイン時は登録 UI |
+| `/categories/[id]` | カテゴリ別の一覧（ページネーションあり） |
+| `/favorites` | お気に入り一覧 |
+| `/archives` | アーカイブ一覧 |
+| `/login` | メール + パスワードログイン |
 
 ---
 
-## API Routes 仕様
+## Supabase クライアントの使い分け
 
-| メソッド | パス                | 認証 | 説明 |
-| -------- | ------------------- | ---- | ---- |
-| POST     | `/api/fetch-meta`   | 必須 | URL→メタデータ自動取得 |
-| POST     | `/api/entries`      | 必須 | 新規登録 |
-| PUT      | `/api/entries/[id]` | 必須 | 更新（category_id, memo） |
-| DELETE   | `/api/entries/[id]` | 必須 | 削除 |
-| GET      | `/api/categories`   | 不要 | カテゴリ一覧 |
+- **Server Component / API Route**: `src/lib/supabase/server.ts`（cookie 連携）
+- **Client Component**: `src/lib/supabase/client.ts`
+- **Middleware（`src/proxy.ts`）**: `src/lib/supabase/middleware.ts`（セッションリフレッシュ）
+
+RLS で SELECT は全員公開・書き込みは authenticated ロールのみ。
 
 ---
 
-## ディレクトリ構成
+## スキーマ / RLS
 
-```
-src/
-├── app/
-│   ├── layout.tsx                 # 共通レイアウト（Header + Sidebar + main）
-│   ├── page.tsx                   # トップページ（/）
-│   ├── login/page.tsx             # ログイン
-│   ├── categories/[id]/page.tsx   # カテゴリページ
-│   └── api/
-│       ├── entries/
-│       │   ├── route.ts           # POST（登録）
-│       │   └── [id]/route.ts      # PUT, DELETE
-│       ├── fetch-meta/route.ts    # メタデータ取得
-│       └── categories/route.ts    # GET（カテゴリ一覧）
-├── components/
-│   ├── layout/
-│   │   ├── Header.tsx             # ヘッダー（ロゴ + 認証ボタン）
-│   │   ├── Sidebar.tsx            # サイドバーラッパー
-│   │   └── CategoryNav.tsx        # カテゴリナビ
-│   ├── entry/
-│   │   ├── EntryCard.tsx          # 表示専用カード
-│   │   ├── EntryCardMenu.tsx      # ドロップダウン（編集/削除）
-│   │   ├── EntryEditModal.tsx     # 編集モーダル
-│   │   ├── EntryList.tsx          # カード一覧（縦積み）
-│   │   ├── CategoryBadge.tsx      # カテゴリバッジ（色つき）
-│   │   ├── EntryForm.tsx          # 登録フォーム（X分岐対応）
-│   │   ├── UrlInput.tsx           # URL入力
-│   │   └── MetaPreview.tsx        # メタデータプレビュー
-│   ├── auth/
-│   │   ├── LoginForm.tsx          # ログインフォーム
-│   │   └── LogoutButton.tsx       # ログアウトボタン
-│   └── ui/
-│       ├── Button.tsx             # 汎用ボタン
-│       ├── Badge.tsx              # 汎用バッジ
-│       ├── Modal.tsx              # 汎用モーダル
-│       ├── DropdownMenu.tsx       # 汎用ドロップダウン
-│       ├── Pagination.tsx         # ページネーション
-│       └── Spinner.tsx            # ローディング
-├── lib/
-│   ├── supabase/
-│   │   ├── client.ts              # ブラウザ用
-│   │   ├── server.ts              # サーバー用
-│   │   └── middleware.ts          # セッションリフレッシュ
-│   ├── api/
-│   │   └── entries.ts             # クライアント側API呼び出し
-│   ├── utils/
-│   │   ├── site.ts                # URL→サイト種別判定
-│   │   └── auth.ts                # signOut
-│   ├── jotai/
-│   │   └── atoms.ts               # metaAtom
-│   └── types/
-│       ├── index.ts               # re-export
-│       ├── site.ts                # SiteType
-│       ├── meta.ts                # Meta
-│       ├── entry.ts               # Entry
-│       └── categories.ts          # Categories
-└── proxy.ts                        # セッションリフレッシュ（Next.js 16）
-```
+- テーブル定義・RLS ポリシー: `docs/schema.sql`
+- タグ機能（`tags` / `entry_tags`）は**テーブルだけ存在、UI・API 未実装**
 
 ---
 
-## コーディングルール
+## 新機能追加時のルール
 
-→ `.claude/rules/coding.md` に移動済み
+- 新しいテーブル / カラムを追加するときは `docs/schema.sql` を更新し、RLS を忘れずに設定する
+- 新しい API Route は `認証チェック → バリデーション → DB 操作 → エラーハンドリング` の順で書く
+- カテゴリ・色の追加や変更は `src/lib/constants/categories.ts` のみを編集（複数箇所に散らさない）
+- 動的な色・サイズも Tailwind class map で管理する（`style={{}}` 禁止）
+- Server Component をデフォルトにし、クライアント操作が必要な箇所だけ `'use client'`
 
-## 環境変数（.env.local）
+---
+
+## ルール・規約
+
+- コーディングルール: `.claude/rules/coding.md`
+- 振る舞いルール: `.claude/rules/hint.md`
+- CSS ルール: `.claude/rules/css.md`（`style={{}}` 禁止、Tailwind のみ）
+
+---
+
+## パフォーマンス改善（方針）
+
+把握済みの改善ポイント。該当箇所を触った**ついでに直す**方針（専用 PR にはしない）。
+
+- `createClient()` の React `cache()` ラップ
+- Server Component 内の `Promise.all` 並列化
+- `layout` と `page` での `categories` 重複取得の解消
+- `is_archived` / `is_favorite` へのインデックス追加
+- `select('*')` をカラム明示へ
+
+詳細: `docs/performance-improvement.md`
+
+---
+
+## 未着手
+
+- **タグ機能**: テーブルだけ存在、UI・API 未実装
+
+---
+
+## 環境変数（`.env.local`）
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
