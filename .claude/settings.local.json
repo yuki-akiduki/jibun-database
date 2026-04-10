@@ -6,7 +6,10 @@
       "Bash(pnpm dev:*)",
       "Bash(pnpm build:*)",
       "Bash(pnpm lint:*)",
-      "Bash(pnpm type-check:*)"
+      "Bash(pnpm type-check:*)",
+      "Bash(mkdir -p .claude)",
+      "Bash(printf 'docs/design_docs/20260410_tag_filter/\\\\n')",
+      "Bash(wc -l docs/design_docs/20260410_tag_filter/*.md)"
     ]
   }
 }

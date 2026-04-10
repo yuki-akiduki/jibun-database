@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude
+# コマンドファイル（.claude/commands/*.md）は管理対象
+# 個人設定のみ ignore
+!.claude/
+.claude/settings.local.json
+.claude/.current-design-doc
+.claude/worktrees/
