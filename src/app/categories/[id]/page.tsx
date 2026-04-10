@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { getUser } from '@/lib/supabase/auth';
+import { getCategories } from '@/lib/supabase/categories';
+import { ENTRY_LIST_COLUMNS } from '@/lib/supabase/queries';
 import BulkDeleteSection from '@/components/entry/BulkDeleteSection';
 import Pagination from '@/components/ui/Pagination';
 import { notFound } from 'next/navigation';
@@ -15,9 +18,9 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const supabase = await createClient();
-  const { data: categories } = await supabase.from('categories').select('name').eq('id', id).single();
-  return { title: categories?.name ?? 'カテゴリ' };
+  const categories = await getCategories();
+  const category = categories.find((cat) => cat.id === id);
+  return { title: category?.name ?? 'カテゴリ' };
 }
 
 export default async function CategoryPage({
@@ -31,22 +34,21 @@ export default async function CategoryPage({
   const { page: pageParam } = await searchParams;
   const currentPage = Math.max(1, Number(pageParam) || 1);
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const [user, categories] = await Promise.all([getUser(), getCategories()]);
   const isLoggedIn = !!user;
 
-  const { data: categories } = await supabase.from('categories').select('*').order('sort_order');
-  const category = categories?.find((cat) => cat.id === id);
+  const category = categories.find((cat) => cat.id === id);
   if (!category) {
     notFound();
   }
 
+  const supabase = await createClient();
   const from = (currentPage - 1) * PER_PAGE;
   const to = from + PER_PAGE - 1;
 
   const { data: entries, count } = await supabase
     .from('entries')
-    .select('*', { count: 'exact' })
+    .select(ENTRY_LIST_COLUMNS, { count: 'exact' })
     .eq('category_id', category.id)
     .eq('is_archived', false)
     .order('created_at', { ascending: false })

@@ -6,7 +6,8 @@ import Header from '@/components/layout/Header';
 import Sidebar from '@/components/layout/Sidebar';
 import CategoryNav from '@/components/layout/CategoryNav';
 import LogoutButton from '@/components/auth/LogoutButton';
-import { createClient } from '@/lib/supabase/server';
+import { getUser } from '@/lib/supabase/auth';
+import { getCategories } from '@/lib/supabase/categories';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,9 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const { data: categories } = await supabase.from('categories').select('*').order('sort_order');
+  const [user, categories] = await Promise.all([getUser(), getCategories()]);
   const isLoggedIn = !!user;
 
   return (

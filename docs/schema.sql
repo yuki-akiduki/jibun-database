@@ -32,9 +32,11 @@ CREATE TABLE entries (
   updated_at    TIMESTAMPTZ DEFAULT now()
 );
 
-CREATE INDEX idx_entries_site_type ON entries(site_type);
-CREATE INDEX idx_entries_category  ON entries(category_id);
-CREATE INDEX idx_entries_created   ON entries(created_at DESC);
+CREATE INDEX idx_entries_site_type   ON entries(site_type);
+CREATE INDEX idx_entries_category    ON entries(category_id);
+CREATE INDEX idx_entries_created     ON entries(created_at DESC);
+CREATE INDEX idx_entries_is_archived ON entries(is_archived);
+CREATE INDEX idx_entries_is_favorite ON entries(is_favorite);
 
 -- 4. 中間テーブル（未使用）
 CREATE TABLE entry_tags (

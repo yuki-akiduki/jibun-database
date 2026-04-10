@@ -1,25 +1,27 @@
 import EntryForm from '@/components/entry/EntryForm';
 import EntryList from '@/components/entry/EntryList';
 import { createClient } from '@/lib/supabase/server';
+import { getUser } from '@/lib/supabase/auth';
+import { getCategories } from '@/lib/supabase/categories';
+import { ENTRY_LIST_COLUMNS } from '@/lib/supabase/queries';
 import type { Entry } from '@/lib/types';
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const isLoggedIn = !!user;
-
-  const { data: entries } = await supabase
+  const entriesPromise = supabase
     .from('entries')
-    .select('*')
+    .select(ENTRY_LIST_COLUMNS)
     .neq('site_type', 'x')
     .eq('is_archived', false)
     .order('created_at', { ascending: false })
     .limit(20);
 
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('*')
-    .order('sort_order');
+  const [user, categories, { data: entries }] = await Promise.all([
+    getUser(),
+    getCategories(),
+    entriesPromise,
+  ]);
+  const isLoggedIn = !!user;
 
   return (
     <div>

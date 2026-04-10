@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { getUser } from '@/lib/supabase/auth';
+import { getCategories } from '@/lib/supabase/categories';
+import { ENTRY_LIST_COLUMNS } from '@/lib/supabase/queries';
 import EntryList from '@/components/entry/EntryList';
 import type { Entry } from '@/lib/types';
 
@@ -10,20 +13,19 @@ export const metadata: Metadata = {
 
 export default async function FavoritesPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const isLoggedIn = !!user;
-
-  const { data: entries } = await supabase
+  const entriesPromise = supabase
     .from('entries')
-    .select('*')
+    .select(ENTRY_LIST_COLUMNS)
     .eq('is_favorite', true)
     .eq('is_archived', false)
     .order('created_at', { ascending: false });
 
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('*')
-    .order('sort_order');
+  const [user, categories, { data: entries }] = await Promise.all([
+    getUser(),
+    getCategories(),
+    entriesPromise,
+  ]);
+  const isLoggedIn = !!user;
 
   return (
     <div>
