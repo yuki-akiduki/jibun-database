@@ -1,26 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  --surface: #ffffff;
+  --border: #e7e5e4;
+  --border-strong: #d6d3d1;
+  --muted: #78716c;
+  --muted-soft: #a8a29e;
 
-  --color-lyric: #8b5cf6;
-  --color-motion: #f59e0b;
-  --color-voiro: #10b981;
-  --color-website: #3b82f6;
-  --color-article: #6366f1;
-  --color-x: #000000;
+  --color-lyric: #7c3aed;
+  --color-motion: #ea580c;
+  --color-voiro: #059669;
+  --color-website: #2563eb;
+  --color-article: #4f46e5;
+  --color-x: #0f172a;
+
+  --color-lyric-soft: #f5f3ff;
+  --color-motion-soft: #fff7ed;
+  --color-voiro-soft: #ecfdf5;
+  --color-website-soft: #eff6ff;
+  --color-article-soft: #eef2ff;
+  --color-x-soft: #f1f5f9;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-border-soft: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-muted: var(--muted);
+  --color-muted-soft: var(--muted-soft);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI",
+    Meiryo, sans-serif;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01", "ss03";
+}
+
+a {
+  text-decoration: none;
+}
+
+::selection {
+  background: #1c1917;
+  color: #fafaf9;
 }

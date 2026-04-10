@@ -23,7 +23,14 @@ export default async function Home() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">最近の登録</h1>
+      <header className="mb-6">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-stone-400">
+          Recent
+        </p>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-stone-900">
+          最近の登録
+        </h1>
+      </header>
       {isLoggedIn && <EntryForm categories={categories ?? []} />}
       <EntryList
         entries={(entries ?? []) as Entry[]}

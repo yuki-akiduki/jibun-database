@@ -32,6 +32,9 @@ function getVisiblePages(current: number, total: number): (number | '...')[] {
   return pages;
 }
 
+const linkBase =
+  'inline-flex h-9 min-w-9 items-center justify-center rounded-full px-3 text-xs font-medium transition-colors';
+
 export default function Pagination({ currentPage, totalPages, basePath }: Props) {
   if (totalPages <= 1) return null;
 
@@ -39,28 +42,28 @@ export default function Pagination({ currentPage, totalPages, basePath }: Props)
   const separator = basePath.includes('?') ? '&' : '?';
 
   return (
-    <nav className="flex items-center gap-1 mt-8">
+    <nav className="mt-10 flex items-center justify-center gap-1">
       {currentPage > 1 && (
         <Link
           href={`${basePath}${separator}page=${currentPage - 1}`}
-          className="px-3 py-2 text-sm rounded-md hover:bg-gray-100 text-gray-600"
+          className={`${linkBase} text-stone-600 hover:bg-stone-100 hover:text-stone-900`}
         >
-          前へ
+          ← 前へ
         </Link>
       )}
       {pages.map((page, i) =>
         page === '...' ? (
-          <span key={`ellipsis-${i}`} className="px-2 py-2 text-sm text-gray-400">
-            ...
+          <span key={`ellipsis-${i}`} className="px-1 text-xs text-stone-400">
+            …
           </span>
         ) : (
           <Link
             key={page}
             href={`${basePath}${separator}page=${page}`}
-            className={`px-3 py-2 text-sm rounded-md ${
+            className={`${linkBase} ${
               page === currentPage
-                ? 'bg-gray-900 text-white'
-                : 'hover:bg-gray-100 text-gray-600'
+                ? 'bg-stone-900 text-stone-50 shadow-sm shadow-stone-900/20'
+                : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
             }`}
           >
             {page}
@@ -70,9 +73,9 @@ export default function Pagination({ currentPage, totalPages, basePath }: Props)
       {currentPage < totalPages && (
         <Link
           href={`${basePath}${separator}page=${currentPage + 1}`}
-          className="px-3 py-2 text-sm rounded-md hover:bg-gray-100 text-gray-600"
+          className={`${linkBase} text-stone-600 hover:bg-stone-100 hover:text-stone-900`}
         >
-          次へ
+          次へ →
         </Link>
       )}
     </nav>

@@ -51,11 +51,13 @@ export default function EntryEditModal({
     <Modal isOpen={isOpen} onClose={onClose} title="エントリを編集">
       <div className="flex flex-col gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
+          <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-stone-500">
+            カテゴリ
+          </label>
           <select
             ref={categoryRef}
             defaultValue={currentCategoryId}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 transition-colors focus:border-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-200"
           >
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
@@ -65,21 +67,28 @@ export default function EntryEditModal({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">メモ</label>
+          <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-stone-500">
+            メモ
+          </label>
           <textarea
             ref={memoRef}
             defaultValue={currentMemo}
             rows={4}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm resize-y"
+            className="w-full resize-y rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 transition-colors focus:border-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-200"
           />
         </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <div className="flex justify-end gap-2">
+        {error && (
+          <p className="flex items-center gap-1.5 text-xs text-rose-600">
+            <span className="material-icons text-[16px]">error_outline</span>
+            {error}
+          </p>
+        )}
+        <div className="flex justify-end gap-2 pt-1">
           <Button variant="secondary" onClick={onClose}>
             キャンセル
           </Button>
           <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? '保存中...' : '保存'}
+            {isSaving ? '保存中…' : '保存'}
           </Button>
         </div>
       </div>

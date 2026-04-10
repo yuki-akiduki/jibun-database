@@ -16,21 +16,27 @@ const MetaPreview = () => {
   if (!meta) return null;
 
   return (
-    <div className="mt-3">
+    <div className="mt-4">
       {meta.site_type === 'x' && meta.html ? (
-        <div dangerouslySetInnerHTML={{ __html: meta.html }} />
+        <div
+          className="rounded-xl border border-stone-200 bg-stone-50/50 p-3"
+          dangerouslySetInnerHTML={{ __html: meta.html }}
+        />
       ) : (
-        <div className="flex gap-3 p-3 border border-gray-200 rounded-md bg-white flex-wrap">
+        <div className="flex flex-wrap gap-3 rounded-xl border border-stone-200 bg-stone-50/50 p-3">
           {meta.thumbnail_url && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={meta.thumbnail_url}
               alt=""
-              className="w-32 h-20 object-cover rounded shrink-0"
+              className="h-20 w-32 shrink-0 rounded-lg object-cover"
             />
           )}
-          <div>
-            <p className="text-sm font-medium text-gray-900">{meta.title}</p>
-            <p className="text-xs text-gray-400 mt-1">{meta.url}</p>
+          <div className="min-w-0 flex-1">
+            <p className="line-clamp-2 text-[13px] font-medium leading-snug text-stone-900">
+              {meta.title}
+            </p>
+            <p className="mt-1 truncate text-[11px] text-stone-400">{meta.url}</p>
           </div>
         </div>
       )}

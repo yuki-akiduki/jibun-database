@@ -29,16 +29,20 @@ export default function Modal({ isOpen, onClose, title, children }: Props) {
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className="m-auto w-full max-w-lg rounded-lg p-0 backdrop:bg-black/50"
+      className="m-auto w-full max-w-lg rounded-2xl border border-stone-200 bg-white p-0 shadow-2xl shadow-stone-900/10 backdrop:bg-stone-900/40 backdrop:backdrop-blur-sm"
     >
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">{title}</h2>
+      <div className="px-6 pb-6 pt-5">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-base font-semibold tracking-tight text-stone-900">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 cursor-pointer"
+            aria-label="閉じる"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700"
           >
-            ✕
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+              <line x1="2" y1="2" x2="12" y2="12" />
+              <line x1="12" y1="2" x2="2" y2="12" />
+            </svg>
           </button>
         </div>
         {children}

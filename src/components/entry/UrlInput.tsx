@@ -42,13 +42,16 @@ const UrlInput = ({ inputRef }: Props) => {
   return (
     <div className="flex-1">
       <div className="relative">
+        <span className="material-icons pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-stone-400">
+          link
+        </span>
         <input
           type="text"
-          placeholder="URLを入力"
+          placeholder="https://..."
           onBlur={(e) => handleFetchMeta(e.target.value)}
           onPaste={(e) => handleFetchMeta(e.clipboardData.getData('text'))}
           ref={inputRef}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+          className="w-full rounded-lg border border-stone-300 bg-white py-2 pl-10 pr-10 text-sm text-stone-900 placeholder:text-stone-400 transition-colors focus:border-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-200"
         />
         {loading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -56,7 +59,12 @@ const UrlInput = ({ inputRef }: Props) => {
           </div>
         )}
       </div>
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-1.5 flex items-center gap-1 text-xs text-rose-600">
+          <span className="material-icons text-[14px]">error_outline</span>
+          {error}
+        </p>
+      )}
     </div>
   );
 };

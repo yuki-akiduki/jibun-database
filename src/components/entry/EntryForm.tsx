@@ -46,26 +46,35 @@ const EntryForm = ({ categories }: { categories: Categories }) => {
   };
 
   return (
-    <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-      <div className="flex gap-2">
+    <div className="mb-8 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm shadow-stone-900/[0.03]">
+      <div className="mb-3 flex items-center gap-2">
+        <span className="material-icons text-[18px] text-stone-400">add_link</span>
+        <h2 className="text-[13px] font-semibold tracking-tight text-stone-900">
+          新しいエントリ
+        </h2>
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row">
         <UrlInput inputRef={inputRef} />
         <Button
           onClick={submitEntry}
           disabled={!meta || submitStatus === 'loading'}
+          className="shrink-0"
         >
-          {submitStatus === 'loading' ? '登録中...' : '登録する'}
+          {submitStatus === 'loading' ? '登録中…' : '登録する'}
         </Button>
       </div>
 
       <MetaPreview />
 
       {meta && !isXPost && (
-        <div className="mt-3 flex flex-col gap-3">
+        <div className="mt-4 flex flex-col gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
+            <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-stone-500">
+              カテゴリ
+            </label>
             <select
               ref={categoryRef}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 transition-colors focus:border-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-200"
             >
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
@@ -75,11 +84,13 @@ const EntryForm = ({ categories }: { categories: Categories }) => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">メモ</label>
+            <label className="mb-1 block text-[11px] font-medium uppercase tracking-wide text-stone-500">
+              メモ
+            </label>
             <textarea
               ref={textAreaRef}
               rows={3}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm resize-y"
+              className="w-full resize-y rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 transition-colors focus:border-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-200"
               placeholder="メモを入力..."
             />
           </div>
@@ -87,10 +98,16 @@ const EntryForm = ({ categories }: { categories: Categories }) => {
       )}
 
       {submitStatus === 'success' && (
-        <p className="mt-2 text-sm text-green-600">登録しました</p>
+        <p className="mt-3 flex items-center gap-1.5 text-xs text-emerald-600">
+          <span className="material-icons text-[16px]">check_circle</span>
+          登録しました
+        </p>
       )}
       {submitStatus === 'error' && (
-        <p className="mt-2 text-sm text-red-600">{errorMessage}</p>
+        <p className="mt-3 flex items-center gap-1.5 text-xs text-rose-600">
+          <span className="material-icons text-[16px]">error_outline</span>
+          {errorMessage}
+        </p>
       )}
     </div>
   );

@@ -42,16 +42,17 @@ export default function DropdownMenu({ items }: Props) {
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-1 rounded-md hover:bg-gray-100 text-gray-500 cursor-pointer"
+        aria-label="メニュー"
+        className="flex h-7 w-7 items-center justify-center rounded-full text-stone-400 transition-colors hover:bg-stone-100 hover:text-stone-700"
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
           <circle cx="10" cy="4" r="1.5" />
           <circle cx="10" cy="10" r="1.5" />
           <circle cx="10" cy="16" r="1.5" />
         </svg>
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-32 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+        <div className="absolute right-0 z-20 mt-1.5 w-40 origin-top-right overflow-hidden rounded-xl border border-stone-200 bg-white py-1 shadow-xl shadow-stone-900/10">
           {items.map((item) => (
             <button
               key={item.label}
@@ -61,16 +62,18 @@ export default function DropdownMenu({ items }: Props) {
                 setIsOpen(false);
               }}
               disabled={item.disabled}
-              className={`flex items-center gap-2 w-full text-left px-4 py-2 text-sm ${
+              className={`flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] transition-colors ${
                 item.disabled
-                  ? 'text-gray-300 cursor-not-allowed'
-                  : `cursor-pointer hover:bg-gray-50 ${
-                      item.variant === 'danger' ? 'text-red-600' : 'text-gray-700'
-                    }`
+                  ? 'text-stone-300'
+                  : item.variant === 'danger'
+                    ? 'text-rose-600 hover:bg-rose-50'
+                    : 'text-stone-700 hover:bg-stone-50'
               }`}
             >
               {item.icon && (
-                <span className="material-icons text-base">{item.icon}</span>
+                <span className={`material-icons text-[17px] ${item.disabled ? 'text-stone-300' : item.variant === 'danger' ? 'text-rose-500' : 'text-stone-400'}`}>
+                  {item.icon}
+                </span>
               )}
               {item.label}
             </button>

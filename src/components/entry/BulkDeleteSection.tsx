@@ -51,13 +51,18 @@ export default function BulkDeleteSection({ entries, categories, isLoggedIn, isX
   };
 
   if (entries.length === 0) {
-    return <p className="text-gray-500 text-sm py-8 text-center">エントリがありません</p>;
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-stone-200 bg-white/50 py-16 text-center">
+        <span className="material-icons text-3xl text-stone-300">inbox</span>
+        <p className="text-sm text-stone-500">エントリがありません</p>
+      </div>
+    );
   }
 
   return (
     <>
       {isLoggedIn && (
-        <div className="flex items-center gap-2 mb-3">
+        <div className="mb-4 flex items-center gap-2">
           {isSelectMode ? (
             <>
               <Button variant="secondary" onClick={exitSelectMode}>
@@ -68,22 +73,23 @@ export default function BulkDeleteSection({ entries, categories, isLoggedIn, isX
                 onClick={handleDelete}
                 disabled={selectedIds.size === 0 || isDeleting}
               >
-                {isDeleting ? '削除中...' : `${selectedIds.size}件を削除`}
+                {isDeleting ? '削除中…' : `${selectedIds.size}件を削除`}
               </Button>
             </>
           ) : (
-            <Button variant="danger" onClick={() => setIsSelectMode(true)}>
-              一括削除
+            <Button variant="secondary" onClick={() => setIsSelectMode(true)}>
+              <span className="material-icons text-[15px]">checklist</span>
+              選択モード
             </Button>
           )}
         </div>
       )}
 
-      <div className={`grid gap-3 ${
-        isXCategory
-          ? 'grid-cols-1 lg:grid-cols-2'
-          : 'grid-cols-1'
-      }`}>
+      <div
+        className={`grid gap-3 ${
+          isXCategory ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'
+        }`}
+      >
         {entries.map((entry) => {
           const categoryName = categories.find((c) => c.id === entry.category_id)?.name;
           return (
@@ -93,7 +99,7 @@ export default function BulkDeleteSection({ entries, categories, isLoggedIn, isX
                   type="checkbox"
                   checked={selectedIds.has(entry.id)}
                   onChange={() => toggleSelect(entry.id)}
-                  className="absolute top-2 left-2 z-10 w-4 h-4 cursor-pointer accent-red-500"
+                  className="absolute left-3 top-3 z-10 h-4 w-4 cursor-pointer accent-rose-500"
                 />
               )}
               <EntryCard

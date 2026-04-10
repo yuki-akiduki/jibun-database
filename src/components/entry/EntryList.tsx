@@ -9,11 +9,16 @@ type Props = {
 
 export default function EntryList({ entries, categories, isLoggedIn }: Props) {
   if (entries.length === 0) {
-    return <p className="text-gray-500 text-sm py-8 text-center">エントリがありません</p>;
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-stone-200 bg-white/50 py-16 text-center">
+        <span className="material-icons text-3xl text-stone-300">inbox</span>
+        <p className="text-sm text-stone-500">エントリがありません</p>
+      </div>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3">
+    <div className="flex flex-col gap-3">
       {entries.map((entry) => {
         const categoryName = categories.find((c) => c.id === entry.category_id)?.name;
         return (

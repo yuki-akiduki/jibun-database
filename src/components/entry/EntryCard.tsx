@@ -64,7 +64,7 @@ const XEmbed = ({ url }: { url: string }) => {
 
   return (
     <div ref={ref}>
-      <p className="text-sm text-gray-400">読み込み中...</p>
+      <p className="text-xs text-stone-400">読み込み中...</p>
     </div>
   );
 };
@@ -88,7 +88,7 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
 
   return (
     <>
-      <div className="flex gap-4 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+      <article className="group relative flex gap-4 rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm shadow-stone-900/[0.02] transition-all duration-200 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md hover:shadow-stone-900/[0.06]">
         {isX ? (
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
@@ -105,38 +105,45 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
                 />
               )}
             </div>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="mt-3 flex items-center gap-2">
               {categoryName && <CategoryBadge name={categoryName} />}
-              <span className="text-xs text-gray-400">
-                {dayjs(entry.created_at).format('YYYY/MM/DD')}
+              <span className="text-[11px] tabular-nums text-stone-400">
+                {dayjs(entry.created_at).format('YYYY.MM.DD')}
               </span>
             </div>
           </div>
         ) : (
           <>
             {entry.thumbnail_url && (
-              <a href={entry.url} target="_blank" rel="noopener noreferrer" className="shrink-0">
+              <a
+                href={entry.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative shrink-0 overflow-hidden rounded-xl"
+              >
                 <Image
                   src={entry.thumbnail_url}
                   alt=""
-                  width={160}
-                  height={96}
-                  className="w-40 h-24 object-cover rounded-md"
+                  width={176}
+                  height={104}
+                  className="h-[104px] w-[176px] object-cover transition-transform duration-300 group-hover:scale-[1.04]"
                   unoptimized
                 />
               </a>
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-1 min-w-0">
+                <div className="flex min-w-0 items-start gap-1.5">
                   {entry.is_favorite && (
-                    <span className="material-icons text-yellow-500 text-base shrink-0">star</span>
+                    <span className="material-icons mt-0.5 shrink-0 text-base text-amber-500">
+                      star
+                    </span>
                   )}
                   <a
                     href={entry.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-medium text-gray-900 no-underline hover:underline line-clamp-2"
+                    className="line-clamp-2 text-[14px] font-medium leading-snug text-stone-900 transition-colors hover:text-stone-600"
                   >
                     {entry.title}
                   </a>
@@ -151,23 +158,23 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
                   />
                 )}
               </div>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="mt-3 flex items-center gap-2">
                 {categoryName && <CategoryBadge name={categoryName} />}
-                <span className="text-xs text-gray-400">
-                  {dayjs(entry.created_at).format('YYYY/MM/DD')}
+                <span className="text-[11px] tabular-nums text-stone-400">
+                  {dayjs(entry.created_at).format('YYYY.MM.DD')}
                 </span>
               </div>
             </div>
             {entry.memo && (
-              <div className="shrink-0 w-48 max-h-24 overflow-y-auto border-l border-gray-200 pl-4">
-                <p className="text-sm text-gray-600 whitespace-pre-wrap">
+              <div className="hidden w-52 shrink-0 max-h-[104px] overflow-y-auto border-l border-stone-200 pl-4 md:block">
+                <p className="whitespace-pre-wrap text-[12px] leading-relaxed text-stone-600">
                   {entry.memo}
                 </p>
               </div>
             )}
           </>
         )}
-      </div>
+      </article>
 
       {isLoggedIn && (
         <EntryEditModal

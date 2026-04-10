@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import BulkDeleteSection from '@/components/entry/BulkDeleteSection';
 import Pagination from '@/components/ui/Pagination';
 import { notFound } from 'next/navigation';
+import { categoryStyles, defaultCategoryStyle } from '@/lib/constants/categories';
 import type { Entry } from '@/lib/types';
 
 const PER_PAGE = 40;
@@ -52,20 +53,28 @@ export default async function CategoryPage({
     .range(from, to);
 
   const totalPages = Math.ceil((count ?? 0) / PER_PAGE);
+  const style = categoryStyles[category.name] ?? defaultCategoryStyle;
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="text-gray-400 hover:text-gray-600 text-sm no-underline">
-            ← 戻る
-          </Link>
-          <h1 className="text-xl font-bold">{category.name}</h1>
+      <header className="mb-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-stone-400 transition-colors hover:text-stone-700"
+        >
+          <span className="material-icons text-[14px]">arrow_back</span>
+          すべて
+        </Link>
+        <div className="mt-2 flex items-baseline gap-3">
+          <span className={`h-2.5 w-2.5 shrink-0 translate-y-[-3px] rounded-full ${style.dot}`} />
+          <h1 className="text-2xl font-semibold tracking-tight text-stone-900">
+            {category.name}
+          </h1>
           {count !== null && (
-            <span className="text-sm text-gray-400">{count}件</span>
+            <span className="text-sm tabular-nums text-stone-400">{count}件</span>
           )}
         </div>
-        </div>
+      </header>
 
       <BulkDeleteSection
         entries={(entries ?? []) as Entry[]}

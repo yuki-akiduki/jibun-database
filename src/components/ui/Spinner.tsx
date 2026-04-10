@@ -3,11 +3,11 @@ type Props = {
 };
 
 export default function Spinner({ size = 'md' }: Props) {
-  const sizeClass = size === 'sm' ? 'h-4 w-4' : 'h-6 w-6';
+  const sizeClass = size === 'sm' ? 'h-4 w-4 border-2' : 'h-6 w-6 border-[2.5px]';
 
   return (
     <div
-      className={`${sizeClass} animate-spin rounded-full border-2 border-gray-300 border-t-gray-900`}
+      className={`${sizeClass} animate-spin rounded-full border-stone-200 border-t-stone-700`}
       role="status"
     >
       <span className="sr-only">読み込み中...</span>

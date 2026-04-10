@@ -27,16 +27,24 @@ export default async function FavoritesPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-4">
-        <Link href="/" className="text-gray-400 hover:text-gray-600 text-sm no-underline">
-          ← 戻る
+      <header className="mb-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-stone-400 transition-colors hover:text-stone-700"
+        >
+          <span className="material-icons text-[14px]">arrow_back</span>
+          すべて
         </Link>
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <span className="material-icons text-yellow-500">star</span>
-          お気に入り
-        </h1>
-        <span className="text-sm text-gray-400">{entries?.length ?? 0}件</span>
-      </div>
+        <div className="mt-2 flex items-center gap-3">
+          <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight text-stone-900">
+            <span className="material-icons text-amber-500">star</span>
+            お気に入り
+          </h1>
+          <span className="text-sm tabular-nums text-stone-400">
+            {entries?.length ?? 0}件
+          </span>
+        </div>
+      </header>
 
       <EntryList
         entries={(entries ?? []) as Entry[]}
