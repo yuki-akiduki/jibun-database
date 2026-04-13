@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { detectSiteType } from '@/lib/utils';
+import { detectSiteType, isPublicHttpUrl } from '@/lib/utils';
 import * as cheerio from 'cheerio';
 
 export const POST = async (request: NextRequest) => {
@@ -17,12 +17,7 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
   }
 
-  try {
-    const parsed = new URL(url);
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return NextResponse.json({ error: '無効なURLスキームです' }, { status: 400 });
-    }
-  } catch {
+  if (!isPublicHttpUrl(url)) {
     return NextResponse.json({ error: '無効なURLです' }, { status: 400 });
   }
 
@@ -42,9 +37,10 @@ export const POST = async (request: NextRequest) => {
         urlObj.hostname === 'youtu.be'
           ? urlObj.pathname.slice(1)
           : urlObj.searchParams.get('v');
-      const thumbnail_url = videoId
+      const candidate = videoId
         ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
         : data.thumbnail_url;
+      const thumbnail_url = isPublicHttpUrl(candidate) ? candidate : '';
       return NextResponse.json({
         title: data.title,
         thumbnail_url,
@@ -68,7 +64,8 @@ export const POST = async (request: NextRequest) => {
       const html = await res.text();
       const $ = cheerio.load(html);
       const title = $('meta[property="og:title"]').attr('content') || $('title').text() || '';
-      const thumbnail_url = $('meta[property="og:image"]').attr('content') || '';
+      const ogImage = $('meta[property="og:image"]').attr('content') || '';
+      const thumbnail_url = isPublicHttpUrl(ogImage) ? ogImage : '';
       return NextResponse.json({ title, thumbnail_url, site_type: siteType });
     }
   } catch {

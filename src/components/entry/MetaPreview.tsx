@@ -33,9 +33,15 @@ const MetaPreview = () => {
             />
           )}
           <div className="min-w-0 flex-1">
-            <p className="line-clamp-2 text-[13px] font-medium leading-snug text-stone-900">
-              {meta.title}
-            </p>
+            {meta.title ? (
+              <p className="line-clamp-2 text-[13px] font-medium leading-snug text-stone-900">
+                {meta.title}
+              </p>
+            ) : (
+              <p className="text-[12px] text-stone-500">
+                メタデータを取得できませんでした。URL のみで登録できます。
+              </p>
+            )}
             <p className="mt-1 truncate text-[11px] text-stone-400">{meta.url}</p>
           </div>
         </div>
