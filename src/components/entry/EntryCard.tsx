@@ -4,10 +4,12 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import dayjs from 'dayjs';
+import { useSetAtom } from 'jotai';
 import CategoryBadge from './CategoryBadge';
 import EntryCardMenu from './EntryCardMenu';
 import EntryEditModal from './EntryEditModal';
 import { deleteEntry } from '@/lib/api/entries';
+import { entryDetailAtom } from '@/lib/jotai/atoms';
 import { Entry, Categories } from '@/lib/types';
 
 declare global {
@@ -72,6 +74,7 @@ const XEmbed = ({ url }: { url: string }) => {
 const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const router = useRouter();
+  const openDetail = useSetAtom(entryDetailAtom);
 
   const handleDelete = async () => {
     if (window.confirm('削除しますか？')) {
@@ -115,21 +118,16 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
         ) : (
           <>
             {entry.thumbnail_url && (
-              <a
-                href={entry.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="relative shrink-0 overflow-hidden rounded-xl"
-              >
+              <div className="relative shrink-0 overflow-hidden">
                 <Image
                   src={entry.thumbnail_url}
                   alt=""
                   width={176}
                   height={104}
-                  className="h-[104px] w-[176px] object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                  className="h-[104px] w-[176px] rounded-xl object-cover transition-transform duration-300 group-hover:scale-[1.04]"
                   unoptimized
                 />
-              </a>
+              </div>
             )}
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
@@ -143,19 +141,21 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
                     href={entry.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="line-clamp-2 text-[14px] font-medium leading-snug text-stone-900 transition-colors hover:text-stone-600"
+                    className="line-clamp-2 text-[14px] font-medium leading-snug text-stone-900 transition-colors hover:text-stone-600 before:absolute before:inset-0 before:content-['']"
                   >
                     {entry.title}
                   </a>
                 </div>
                 {isLoggedIn && (
-                  <EntryCardMenu
-                    entryId={entry.id}
-                    isFavorite={entry.is_favorite}
-                    isArchived={entry.is_archived}
-                    onEdit={() => setIsEditOpen(true)}
-                    onDelete={handleDelete}
-                  />
+                  <div className="relative z-10">
+                    <EntryCardMenu
+                      entryId={entry.id}
+                      isFavorite={entry.is_favorite}
+                      isArchived={entry.is_archived}
+                      onEdit={() => setIsEditOpen(true)}
+                      onDelete={handleDelete}
+                    />
+                  </div>
                 )}
               </div>
               <div className="mt-3 flex items-center gap-2">
@@ -164,14 +164,37 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
                   {dayjs(entry.created_at).format('YYYY.MM.DD')}
                 </span>
               </div>
-            </div>
-            {entry.memo && (
-              <div className="hidden w-52 shrink-0 max-h-[104px] overflow-y-auto border-l border-stone-200 pl-4 md:block">
-                <p className="whitespace-pre-wrap text-[12px] leading-relaxed text-stone-600">
+              {entry.memo && (
+                <p
+                  onClick={() => openDetail({ entry, categoryName })}
+                  className="relative z-10 mt-2 line-clamp-2 cursor-pointer whitespace-pre-wrap text-[12px] leading-relaxed text-stone-600 transition-colors hover:text-stone-900"
+                >
                   {entry.memo}
                 </p>
+              )}
+              <div className="relative z-10 mt-2.5">
+                <button
+                  type="button"
+                  onClick={() => openDetail({ entry, categoryName })}
+                  className="group/detail inline-flex items-center gap-1 text-[12px] font-medium text-stone-600 transition-colors hover:text-stone-900"
+                >
+                  コメントを読む
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="transition-transform group-hover/detail:translate-x-0.5"
+                  >
+                    <path d="M3 1l4 4-4 4" />
+                  </svg>
+                </button>
               </div>
-            )}
+            </div>
           </>
         )}
       </article>

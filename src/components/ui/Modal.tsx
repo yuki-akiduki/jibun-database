@@ -29,6 +29,9 @@ export default function Modal({ isOpen, onClose, title, children }: Props) {
     <dialog
       ref={dialogRef}
       onClose={onClose}
+      onClick={(e) => {
+        if (e.target === dialogRef.current) onClose();
+      }}
       className="m-auto w-full max-w-lg rounded-2xl border border-stone-200 bg-white p-0 shadow-2xl shadow-stone-900/10 backdrop:bg-stone-900/40 backdrop:backdrop-blur-sm"
     >
       <div className="px-6 pb-6 pt-5">

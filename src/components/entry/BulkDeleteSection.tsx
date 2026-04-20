@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import EntryCard from './EntryCard';
+import EntryDetailModalRoot from './EntryDetailModalRoot';
 import { deleteEntry } from '@/lib/api/entries';
 import { Entry, Categories } from '@/lib/types';
 
@@ -112,6 +113,7 @@ export default function BulkDeleteSection({ entries, categories, isLoggedIn, isX
           );
         })}
       </div>
+      <EntryDetailModalRoot />
     </>
   );
 }

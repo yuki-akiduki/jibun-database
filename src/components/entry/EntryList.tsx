@@ -1,5 +1,6 @@
 import { Entry, Categories } from '@/lib/types';
 import EntryCard from './EntryCard';
+import EntryDetailModalRoot from './EntryDetailModalRoot';
 
 type Props = {
   entries: Entry[];
@@ -18,19 +19,22 @@ export default function EntryList({ entries, categories, isLoggedIn }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      {entries.map((entry) => {
-        const categoryName = categories.find((c) => c.id === entry.category_id)?.name;
-        return (
-          <EntryCard
-            key={entry.id}
-            entry={entry}
-            categories={categories}
-            categoryName={categoryName}
-            isLoggedIn={isLoggedIn}
-          />
-        );
-      })}
-    </div>
+    <>
+      <div className="flex flex-col gap-3">
+        {entries.map((entry) => {
+          const categoryName = categories.find((c) => c.id === entry.category_id)?.name;
+          return (
+            <EntryCard
+              key={entry.id}
+              entry={entry}
+              categories={categories}
+              categoryName={categoryName}
+              isLoggedIn={isLoggedIn}
+            />
+          );
+        })}
+      </div>
+      <EntryDetailModalRoot />
+    </>
   );
 }

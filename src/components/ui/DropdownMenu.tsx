@@ -52,7 +52,7 @@ export default function DropdownMenu({ items }: Props) {
         </svg>
       </button>
       {isOpen && (
-        <div className="absolute right-0 z-20 mt-1.5 w-40 origin-top-right overflow-hidden rounded-xl border border-stone-200 bg-white py-1 shadow-xl shadow-stone-900/10">
+        <div className="absolute right-0 z-50 mt-1.5 w-40 origin-top-right overflow-hidden rounded-xl border border-stone-200 bg-white py-1 shadow-xl shadow-stone-900/10">
           {items.map((item) => (
             <button
               key={item.label}
