@@ -88,7 +88,7 @@ const EntryCard = ({ entry, categories, categoryName, isLoggedIn }: Props) => {
 
   return (
     <>
-      <article className="group relative flex gap-4 rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm shadow-stone-900/[0.02] transition-all duration-200 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md hover:shadow-stone-900/[0.06]">
+      <article className="group relative flex gap-4 rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm shadow-stone-900/[0.02] transition-all duration-200 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-md hover:shadow-stone-900/[0.06] has-[[data-menu-open=true]]:z-30">
         {isX ? (
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">

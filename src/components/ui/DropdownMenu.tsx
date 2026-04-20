@@ -39,7 +39,7 @@ export default function DropdownMenu({ items }: Props) {
   }, [isOpen]);
 
   return (
-    <div ref={menuRef} className="relative">
+    <div ref={menuRef} className="relative" data-menu-open={isOpen}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="メニュー"
